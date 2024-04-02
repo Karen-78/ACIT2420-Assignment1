@@ -1,0 +1,69 @@
+#!/bin/bash
+
+# generic error catcher
+err(){
+    echo "ERROR: ${@}" >&2
+    exit 1
+}
+
+# message to prompt user on how to correct use the script
+prompt="bckup {-c:-s:-l} [file]"
+
+# to source the configuration file 
+if [[ -f $HOME/.config/bckup/bckup.config ]]; then
+    source ~/.config/bckup/bckup.config
+else
+    err "Please create a configuration file one at .config/bckup/bckup.config"
+fi
+
+# use "copy" option for rclone to copy files
+create_copy() {
+    local file=$(realpath $1)
+    rclone copy $file "${config_spaces_name}:${spaces_backup_path}" || err "copy failed"
+}
+
+# use "sync" option for rclone to sync files 
+create_sync() {
+    local file=$(realpath $1)
+    rclone sync -i $file "${config_spaces_name}:${spaces_backup_path}" || err "sync failed" 
+}
+
+# to restore files from remote to local system
+restore_file() {
+    # checks for existance of $HOME/restored_files directory 
+    if [[ -d $HOME/restored_files ]]; then
+        rclone copy "${config_spaces_name}:${spaces_backup_path}" "${restored_files_location}" --progress || err "restore failed"
+    # if restored_files directory does not exist in home directory, then make it 
+    else
+        mkdir $HOME/restored_files
+        rclone copy "${config_spaces_name}:${spaces_backup_path}" "${restored_files_location}" --progress || err "restore failed"
+    fi
+}
+
+# to process options the user passes in
+while getopts ":c:s:lr" opt; do
+    case "$opt" in
+        c)
+            create_copy ${OPTARG}
+            echo "rclone copy sucessful"
+	    ;;
+    	s)
+            create_sync ${OPTARG}
+	        echo "rclone sync successful"
+	    ;;
+        l)
+            rclone ls "${config_spaces_name}:${spaces_backup_path}"
+            ;;
+    	r) 
+	        backup_file
+	        echo "rclone restore successful"
+	    ;;
+    	:)
+            err "-${OPTARG} requires an argument"
+            ;;
+        *)
+            err "$prompt"
+            ;;
+    esac
+done
+

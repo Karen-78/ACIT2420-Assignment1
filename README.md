@@ -22,7 +22,7 @@ To copy a file to Spaces:
 
 To sync a folder to Spaces: 
 ```
-./bin/bckup/bckup -s ~/file-to-backup
+./bin/bckup/bckup -s ~/dir-to-backup
 ```
 Note: using sync will result in rclone prompting if you want to make, copy, or delete files and directories. 
 

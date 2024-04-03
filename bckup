@@ -7,7 +7,7 @@ err(){
 }
 
 # message to prompt user on how to correct use the script
-prompt="bckup {-c:-s:-l} [file]"
+prompt="bckup {-c:-s:-l:-r} [file]"
 
 # to source the configuration file 
 if [[ -f $HOME/.config/bckup/bckup.config ]]; then
@@ -28,14 +28,14 @@ create_sync() {
     rclone sync -i $file "${config_spaces_name}:${spaces_backup_path}" || err "sync failed" 
 }
 
-# to restore files from remote to local system
+# to restore from remote to local system
 restore_file() {
     # checks for existance of $HOME/restored_files directory 
-    if [[ -d $HOME/restored_files ]]; then
+    if [[ -d ${restored_files_location} ]]; then
         rclone copy "${config_spaces_name}:${spaces_backup_path}" "${restored_files_location}" --progress || err "restore failed"
     # if restored_files directory does not exist in home directory, then make it 
     else
-        mkdir $HOME/restored_files
+        mkdir ${restored_files_location}
         rclone copy "${config_spaces_name}:${spaces_backup_path}" "${restored_files_location}" --progress || err "restore failed"
     fi
 }
@@ -45,7 +45,7 @@ while getopts ":c:s:lr" opt; do
     case "$opt" in
         c)
             create_copy ${OPTARG}
-            echo "rclone copy sucessful"
+            echo "rclone copy successful"
 	    ;;
     	s)
             create_sync ${OPTARG}
@@ -55,7 +55,7 @@ while getopts ":c:s:lr" opt; do
             rclone ls "${config_spaces_name}:${spaces_backup_path}"
             ;;
     	r) 
-	        backup_file
+	        restore_file
 	        echo "rclone restore successful"
 	    ;;
     	:)

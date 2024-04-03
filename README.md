@@ -14,18 +14,24 @@ Explanation of bckup.config file:
 
 
 Examples how to use the script from your home directory: 
-    To copy a file to Spaces: 
-        ``` 
-        ./bin/bckup/bckup -c backup-example
-        ```
-    
-    To sync a folder to Spaces: 
-        ```
-        ./bin/bckup/bckup -s ~/bin
-        ```
-        Note: this will result in rclone prompting if you want to make, copy, or delete files and directories. 
 
-    To see backed up files on Spaces: 
-        ``` 
-        ./bin/bckup/bckup -l
-        ```
+To copy a file to Spaces: 
+``` 
+./bin/bckup/bckup -c backup-example
+```
+
+To sync a folder to Spaces: 
+```
+./bin/bckup/bckup -s ~/bin
+```
+Note: using sync will result in rclone prompting if you want to make, copy, or delete files and directories. 
+
+To see backed up files on Spaces: 
+``` 
+./bin/bckup/bckup -l
+```
+
+To restore files from remote to local system: 
+```
+./bin/bckup/bckup -r
+```
